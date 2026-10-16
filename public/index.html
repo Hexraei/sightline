@@ -2,237 +2,280 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sightline - one film, a million tellings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sightline: one film, a million tellings</title>
+<meta name="description" content="AI audio description that fits the silences between dialogue, retold for every listener in their own language.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%274%27 fill=%27%2316191b%27/%3E%3Crect x=%274%27 y=%2714%27 width=%2710%27 height=%274%27 fill=%27%235d6468%27/%3E%3Crect x=%2716%27 y=%2712%27 width=%2712%27 height=%278%27 fill=%27%23efe6d2%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d0f16;--panel:#151a26;--panel2:#1b2233;--ink:#edf1f8;--muted:#93a1bb;--accent:#5b9dff;--accent2:#3d7fe0;--amber:#e8b458;--red:#e4694e;--line:#253049;--radius:14px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-header{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.mark{font-size:22px;font-weight:800;letter-spacing:-.5px}.mark span{color:var(--accent)}
-.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-.spacer{flex:1}
-main{display:grid;grid-template-columns:minmax(340px,52%) 1fr;gap:18px;padding:18px 22px;max-width:1280px;margin:0 auto}
-@media(max-width:980px){main{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px}
-.panel h2{font-size:13px;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
-video{width:100%;border-radius:10px;background:#000}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
-select,.btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
-.btn{cursor:pointer;font-weight:600}
-.btn.primary{background:var(--accent);color:#081527;border-color:var(--accent);font-weight:700}
-.btn.primary:hover{background:var(--accent2)}
-.btn:disabled{opacity:.45;cursor:default}
-.pill{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--muted);cursor:pointer;background:transparent}
-.pill.active{background:var(--accent);color:#081527;border-color:var(--accent);font-weight:700}
-.status{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px}
-.beat{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px;align-items:flex-start}
-.beat:first-of-type{border-top:none}
-.dot{flex:0 0 10px;height:10px;border-radius:50%;margin-top:6px}
-.dot.hi{background:var(--accent)}.dot.mid{background:var(--amber)}.dot.lo{background:var(--red)}
-.beat .t{color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 52px}
-.basis{font-size:12px;color:var(--muted)}
-.narrline{padding:9px 0;border-top:1px solid var(--line);font-size:14px}
-.narrline:first-of-type{border-top:none}
-.narrline .gap{font-size:12px;color:var(--accent);font-weight:700}
-textarea.edit{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13.5px;margin-top:4px}
-.hidden{display:none!important}
-footer{max-width:1280px;margin:0 auto;padding:4px 22px 28px;color:var(--muted);font-size:12px}
-.contrast{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+:root{
+  --room:#16191b;      /* the screening room */
+  --stage:#000;        /* the screen itself */
+  --raise:#1e2225;
+  --line:#2e3438;
+  --ink:#e8e5de;       /* silver print */
+  --muted:#a8a69f;
+  --faint:#878a8b;
+  --light:#efe6d2;     /* projector light: primary action, the line being spoken */
+  --high:#8fc79d; --mid:#e2aa58; --low:#e27a63;
+  --serif:"Instrument Serif","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI","Noto Sans","Noto Sans JP","Noto Sans Arabic",sans-serif;
+  --s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.5rem;--s6:2rem;--s7:3rem;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--room);color-scheme:dark}
+body{background:var(--room);color:var(--ink);font:400 1rem/1.55 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--light);outline-offset:2px}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* masthead */
+.masthead{display:flex;align-items:baseline;gap:var(--s5);flex-wrap:wrap;max-width:1440px;margin:0 auto;padding:var(--s6) var(--s6) var(--s4)}
+.wordmark{font:400 2.75rem/1 var(--serif);letter-spacing:-.01em}
+.motto{font:italic 400 1.5rem/1.2 var(--serif);color:var(--muted)}
+.lede{max-width:1440px;margin:0 auto;padding:0 var(--s6) var(--s5);color:var(--muted);font-size:1.0625rem;max-width:min(1440px,100%)}
+.lede p{max-width:62ch}
+
+main{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s7);max-width:1440px;margin:0 auto;padding:0 var(--s6) var(--s7);align-items:start}
+.stage-col{position:sticky;top:var(--s5)}
+h2{font:400 1.875rem/1.15 var(--serif);margin-bottom:var(--s3)}
+h2 .for{display:block;font-size:1.375rem;font-style:italic;color:var(--muted)}
+.hint{color:var(--muted);font-size:.9375rem;max-width:60ch;margin-bottom:var(--s4)}
+
+/* the screen */
+.screen{background:var(--stage);border:1px solid var(--line);border-radius:2px;padding:var(--s3)}
+video{display:block;width:100%;max-height:min(44vh,600px);background:var(--stage);object-fit:contain}
+#film[data-empty] video{aspect-ratio:16/9}
+#film[data-empty] video{background:
+  repeating-linear-gradient(90deg,transparent 0 calc(12.5% - 1px),#ffffff08 calc(12.5% - 1px) 12.5%),var(--stage)}
+.adline{min-height:2.9em;padding:var(--s3) var(--s2) var(--s1);font:italic 400 1.5rem/1.2 var(--serif);color:var(--light);text-align:center;text-wrap:balance}
+.adline:empty::before{content:"Narration is shown here as it is spoken.";color:#ffffff38}
+
+/* silence map */
+.map-wrap{margin-top:var(--s3)}
+.map{position:relative;height:28px;background:var(--raise);border-radius:2px;cursor:pointer;overflow:hidden}
+.seg{position:absolute;top:0;bottom:0}
+.seg.dialogue{top:9px;bottom:9px;background:#5d6468}
+.seg.gap.open{border-left:1px solid #ffffff20}
+.seg.gap.told{background:#efe6d214;border-left:1px solid var(--light)}
+.seg.gap.told .speech{display:block;height:100%;background:var(--light);opacity:.85}
+.seg.gap.quiet{background:repeating-linear-gradient(135deg,transparent 0 3px,#ffffff12 3px 5px)}
+.tick{position:absolute;top:2px;width:5px;height:5px;border-radius:50%;margin-left:-2.5px}
+.tick.high{background:var(--high)}.tick.mid{background:var(--mid)}.tick.low{background:var(--low)}
+.playhead{position:absolute;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 2px var(--room);pointer-events:none}
+.map-key{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);margin-top:var(--s2);font-size:.8125rem;color:var(--muted)}
+.key{display:inline-flex;align-items:center;gap:var(--s2)}
+.swatch{width:14px;height:8px;border-radius:1px}
+.swatch.dialogue{background:#5d6468}.swatch.told{background:var(--light)}
+.swatch.quiet{background:repeating-linear-gradient(135deg,transparent 0 2px,#ffffff40 2px 4px);outline:1px solid #ffffff20}
+#mapLegend{margin-left:auto}
+
+/* controls */
+.row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.film-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);margin-bottom:var(--s3)}
+.film-head h2{margin:0}
+.btn{min-height:44px;padding:var(--s2) var(--s4);border:1px solid var(--line);border-radius:4px;background:var(--raise);cursor:pointer;font-weight:500;font-size:.9375rem}
+.btn:hover:not(:disabled){border-color:#4a5257}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--light);color:var(--room);border-color:var(--light);font-weight:600;font-size:1.0625rem;padding:var(--s3) var(--s5)}
+.btn.primary:hover:not(:disabled){background:#fff}
+.btn.quiet{background:transparent}
+
+.dials{display:grid;grid-template-columns:auto 1fr;gap:var(--s3) var(--s5);align-items:center}
+.dial-label{color:var(--muted);font-size:.9375rem}
+.pills{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.pill{min-height:40px;padding:var(--s1) var(--s4);border:1px solid var(--line);border-radius:999px;background:transparent;cursor:pointer;font-size:.9375rem}
+.pill:hover{border-color:#4a5257}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--room);border-color:var(--ink);font-weight:600}
+select{min-height:40px;padding:var(--s1) var(--s6) var(--s1) var(--s3);background:var(--raise) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8a69f' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right .75rem center;border:1px solid var(--line);border-radius:4px;appearance:none;cursor:pointer;justify-self:start}
+.custom{grid-column:2;display:flex;gap:var(--s2)}
+.custom input{flex:1;min-width:0;min-height:40px;padding:var(--s1) var(--s3);background:var(--raise);border:1px solid var(--line);border-radius:4px}
+
+.action{margin-top:var(--s4);display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);align-items:center;min-height:2rem}
+.watch{margin-top:var(--s5)}
+#beatsPanel{margin-top:var(--s7)}
+.status{flex:1 1 18rem;font-size:.9375rem;color:var(--muted);min-height:1.5em}
+.status[data-kind="error"]{color:var(--low)}
+.status[data-kind="error"]::before{content:"! ";font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);border-radius:999px;font-size:.8125rem;font-weight:500;border:1px solid}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.badge[data-kind="cloud"]{color:var(--high);border-color:#8fc79d55}
+.badge[data-kind="local"]{color:var(--mid);border-color:#e2aa5855}
+.badge[data-kind="mock"]{color:var(--muted);border-color:var(--line)}
+
+.playback{margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:var(--s4) var(--s5);align-items:flex-end}
+.contrast{flex:1 1 24rem}
+.contrast h3{font:italic 400 1.125rem/1.2 var(--serif);color:var(--muted);margin-bottom:var(--s2)}
+.tellings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}
+.telling{display:flex;flex-direction:column;align-items:flex-start;gap:0;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;text-align:left}
+.telling:hover{border-color:var(--light)}
+.telling strong{font:400 1.375rem/1.1 var(--serif)}
+.telling span{color:var(--muted);font-size:.875rem}
+
+/* review column */
+.review{min-width:0}
+.list{list-style:none;padding:0}
+.empty{color:var(--muted);padding:var(--s4) 0;border-top:1px solid var(--line);max-width:52ch}
+.beat{display:grid;grid-template-columns:112px 1fr;gap:var(--s4);padding:var(--s4) 0;border-top:1px solid var(--line)}
+.thumb{display:block;width:112px;aspect-ratio:4/3;object-fit:cover;background:var(--raise);border-radius:2px;filter:grayscale(.15)}
+.beat.mid .thumb{outline:2px solid #e2aa5899;outline-offset:2px}
+.beat.low .thumb{outline:2px solid #e27a6399;outline-offset:2px}
+.beat-meta,.line-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);font-size:.875rem;color:var(--muted)}
+.visual{font:400 1.375rem/1.3 var(--serif);margin-top:var(--s1)}
+.beat.pending .visual{color:var(--faint);font-style:italic}
+.basis{margin-top:var(--s1);font-size:.875rem;color:var(--muted)}
+.basis-label{color:var(--faint);font-style:italic}
+.tc{min-height:28px;padding:0 var(--s2);margin-left:calc(-1 * var(--s2));border:0;border-radius:2px;background:transparent;color:var(--ink);font-weight:500;cursor:pointer}
+.tc:hover{background:var(--raise)}
+.conf{display:inline-flex;align-items:center;gap:var(--s2)}
+.dot{width:9px;height:9px;border-radius:50%}
+.conf.high .dot{background:var(--high)}.conf.mid .dot{background:var(--mid)}.conf.low .dot{background:var(--low)}
+.conf.mid{color:var(--mid)}.conf.low{color:var(--low)}
+
+#narrPanel{margin-top:var(--s7)}
+.line{padding:var(--s4) 0 var(--s4) var(--s4);border-top:1px solid var(--line);border-left:2px solid transparent;margin-left:calc(-1 * var(--s4) - 2px);transition:border-color .3s,background-color .3s}
+.line.speaking{border-left-color:var(--light);background:#efe6d20d}
+.line.skipped .line-meta{color:var(--faint)}
+.variant{padding:0 var(--s2);border:1px solid var(--line);border-radius:2px;color:var(--ink);font-size:.8125rem}
+textarea{display:block;width:100%;margin-top:var(--s2);padding:var(--s2) var(--s3);background:var(--raise);border:1px solid var(--line);border-radius:4px;font-size:1.0625rem;line-height:1.5;resize:vertical;field-sizing:content;min-height:2.6em}
+textarea:focus{border-color:#5a6267}
+.fitnote{margin-top:var(--s1);font-size:.8125rem;color:var(--faint)}
+.fitnote.over{color:var(--mid)}
+.export{margin-top:var(--s5);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+.export p{color:var(--muted);font-size:.875rem;flex:1 1 16rem}
+
+[aria-busy="true"] .list{opacity:.6}
+
+footer{max-width:1440px;margin:0 auto;padding:var(--s5) var(--s6) var(--s6);border-top:1px solid var(--line);color:var(--faint);font-size:.8125rem;display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5)}
+footer a{color:var(--muted)}
+
+@media (max-width:1100px){
+  main{grid-template-columns:1fr;gap:var(--s6)}
+  .stage-col{position:static}
+  #narrPanel{margin-top:var(--s6)}
+}
+@media (max-width:640px){
+  .masthead{padding:var(--s5) var(--s4) var(--s3);gap:var(--s2)}
+  .wordmark{font-size:2.25rem}.motto{font-size:1.25rem}
+  .lede,main{padding-left:var(--s4);padding-right:var(--s4)}
+  footer{padding-left:var(--s4);padding-right:var(--s4)}
+  .screen{padding:var(--s1)}
+  .adline{font-size:1.25rem}
+  .dials{grid-template-columns:1fr;gap:var(--s2)}
+  .custom{grid-column:1}
+  .dial-label:not(:first-child){margin-top:var(--s2)}
+  .tellings{grid-template-columns:1fr}
+  .beat{grid-template-columns:80px 1fr;gap:var(--s3)}
+  .thumb{width:80px}
+  .visual{font-size:1.25rem}
+  #mapLegend{margin-left:0;flex-basis:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header>
-  <div class="mark">Sight<span>line</span></div>
-  <div class="tag">One film, a million tellings</div>
-  <div class="spacer"></div>
-  <select id="lang">
-    <option value="en">English</option><option value="es">Español</option><option value="fr">Français</option>
-    <option value="de">Deutsch</option><option value="pt">Português</option><option value="ja">日本語</option><option value="ar">العربية</option>
-  </select>
+<header class="masthead">
+  <h1 class="wordmark">Sightline</h1>
+  <p class="motto">One film, a million tellings.</p>
 </header>
+<div class="lede"><p>Sightline watches a scene, finds the silences between lines of dialogue, and writes audio description that fits inside them, retold for whoever is listening, in their own language.</p></div>
+
 <main>
-  <section>
-    <div class="panel">
-      <h2>The film</h2>
-      <video id="vid" controls playsinline></video>
-      <div class="row">
-        <button class="btn" id="upVideo">Load a clip</button>
-        <button class="btn" id="upVtt">Load subtitles (.vtt)</button>
-        <button class="btn" id="sampleBtn">Use the sample scene</button>
-        <input type="file" id="fVideo" accept="video/*" class="hidden">
-        <input type="file" id="fVtt" accept=".vtt,.srt" class="hidden">
+  <div class="stage-col">
+    <section id="film" aria-labelledby="h-film" data-empty>
+      <div class="film-head">
+        <h2 id="h-film">The film</h2>
+        <div class="row sources">
+          <button class="btn" id="pickVideo" type="button">Load a clip</button>
+          <button class="btn" id="pickVtt" type="button">Load subtitles (.vtt)</button>
+          <button class="btn quiet" id="sample" type="button">Use the sample scene</button>
+          <input type="file" id="fileVideo" accept="video/*" hidden>
+          <input type="file" id="fileVtt" accept=".vtt,.srt,text/vtt" hidden>
+        </div>
       </div>
-      <div class="row" id="whoRow">
-        <span style="font-size:12.5px;color:var(--muted)">Listening as:</span>
-        <button class="pill active" data-persona="cinematic">Film lover</button>
-        <button class="pill" data-persona="child">7-year-old</button>
-        <button class="pill" data-persona="radio">Hands-free radio cut</button>
+      <div class="screen">
+        <video id="vid" controls playsinline preload="metadata"></video>
+        <p class="adline" id="adline" aria-hidden="true"></p>
       </div>
-      <div class="row">
-        <button class="btn primary" id="watchBtn" disabled>Watch it with Sightline</button>
+      <div class="map-wrap">
+        <div class="map" id="map" aria-hidden="true" title="Click to jump"></div>
+        <div class="map-key">
+          <span class="key"><span class="swatch dialogue"></span>Dialogue</span>
+          <span class="key"><span class="swatch told"></span>Narration</span>
+          <span class="key"><span class="swatch quiet"></span>Too short to narrate</span>
+          <span id="mapLegend"></span>
+        </div>
       </div>
-      <div class="status" id="status"></div>
-      <div class="status" id="backend" style="margin-top:-6px"></div>
-      <div class="status" id="backend" style="margin-top:-6px"></div>
-      <div class="contrast hidden" id="contrast">
-        <span style="font-size:12.5px;color:var(--muted);align-self:center">Hear the same scene as:</span>
-        <button class="pill" data-demo='{"persona":"cinematic","lang":"en"}'>🎬 Cinephile · EN</button>
-        <button class="pill" data-demo='{"persona":"child","lang":"es"}'>🧒 Child · ES</button>
-        <button class="pill" data-demo='{"persona":"radio","lang":"ja"}'>🍳 Radio cut · JA</button>
+      <div class="action">
+        <p class="status" id="status" role="status" aria-live="polite">Load a clip with its subtitles, or use the sample scene.</p>
+        <span class="badge" id="badge" hidden></span>
       </div>
-    </div>
-  </section>
-  <section>
-    <div class="panel">
-      <h2>What the model saw <span id="beatCount" style="color:var(--accent)"></span></h2>
-      <div id="beats" style="color:var(--muted)">Nothing yet. Load a clip and press "Watch it with Sightline".</div>
-    </div>
-    <div class="panel">
-      <h2>The narration, per listener <span id="narrMeta" style="color:var(--accent)"></span></h2>
-      <div id="narr" style="color:var(--muted)">Narration lines appear here, fitted into the silences between dialogue. Amber or red means the model was unsure and a human should check the line before export.</div>
-      <div class="row hidden" id="exportRow">
-        <button class="btn" id="exportBtn">Approve &amp; export AD script</button>
-        <button class="btn" id="playBtn">▶ Play the telling</button>
+      <div class="playback">
+        <button class="btn primary" id="play" type="button" aria-pressed="false" disabled>Play with narration</button>
+        <div class="contrast" id="contrast" role="group" aria-labelledby="h-contrast" hidden>
+          <h3 id="h-contrast">Hear the same scene as</h3>
+          <div class="tellings">
+            <button class="telling" type="button" data-demo="cinematic|en" aria-label="Cinephile, in English"><strong>Cinephile</strong><span>in English</span></button>
+            <button class="telling" type="button" data-demo="child|es" aria-label="Child, in Spanish"><strong>Child</strong><span lang="es">en español</span></button>
+            <button class="telling" type="button" data-demo="radio|ja" aria-label="Radio cut, in Japanese"><strong>Radio cut</strong><span lang="ja">日本語で</span></button>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
+
+  <div class="review">
+    <section id="dialsPanel" aria-labelledby="h-dials">
+      <h2 id="h-dials">The dials</h2>
+      <div class="dials">
+        <span class="dial-label" id="l-persona">Who is listening</span>
+        <div class="pills" role="group" aria-labelledby="l-persona">
+          <button class="pill" type="button" data-persona="cinematic" aria-pressed="true">Film lover</button>
+          <button class="pill" type="button" data-persona="child" aria-pressed="false">7-year-old</button>
+          <button class="pill" type="button" data-persona="radio" aria-pressed="false">Hands-free radio cut</button>
+          <button class="pill" type="button" data-persona="custom" aria-pressed="false">Someone else</button>
+        </div>
+        <form class="custom" id="customRow" hidden>
+          <label class="sr-only" for="customText">Describe the listener</label>
+          <input id="customText" maxlength="200" placeholder="A sound designer who wants every texture" autocomplete="off">
+          <button class="btn" type="submit">Use this listener</button>
+        </form>
+        <label class="dial-label" for="lang">Language</label>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="es" lang="es">Español</option>
+          <option value="fr" lang="fr">Français</option>
+          <option value="de" lang="de">Deutsch</option>
+          <option value="pt" lang="pt">Português</option>
+          <option value="ja" lang="ja">日本語</option>
+          <option value="ar" lang="ar">العربية</option>
+        </select>
+      </div>
+      <button class="btn primary watch" id="watch" type="button" disabled>Watch it with Sightline</button>
+    </section>
+    <section id="beatsPanel" aria-labelledby="h-saw">
+      <h2 id="h-saw">What the model saw</h2>
+      <p class="hint"><span id="beatCount"></span>Green beats are clear in the frame. Amber and red ones are the model’s guesses: check those lines before export.</p>
+      <ul class="list" id="beats"></ul>
+    </section>
+    <section id="narrPanel" aria-labelledby="h-narr">
+      <h2 id="h-narr">The narration, per listener <span class="for" id="narrFor"></span></h2>
+      <ul class="list" id="narr"></ul>
+      <div class="export">
+        <button class="btn" id="export" type="button" disabled>Export AD script</button>
+        <p>A timecoded text script with dialogue cues and every description line, edits included.</p>
+      </div>
+    </section>
+  </div>
 </main>
-<footer>Sightline · AMD Developer Hackathon ACT III · Open models on AMD Developer Cloud · Demo footage: public domain</footer>
-<script>
-const $=id=>document.getElementById(id);
-const vid=$('vid');
-let VTT=[], BEATS=[], NARR=null, PERSONA='cinematic', LANG='en', PLAYING=false;
 
-const LANGVOICE={en:'en-US',es:'es-ES',fr:'fr-FR',de:'de-DE',pt:'pt-PT',ja:'ja-JP',ar:'ar-SA'};
-
-$('upVideo').onclick=()=>$('fVideo').click();
-$('upVtt').onclick=()=>$('fVtt').click();
-$('fVideo').onchange=e=>{const f=e.target.files[0];if(!f)return;vid.src=URL.createObjectURL(f);$('watchBtn').disabled=false;};
-$('fVtt').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{VTT=parseVtt(t);$('status').textContent=VTT.length+' subtitle cues loaded';});};
-$('sampleBtn').onclick=async()=>{
-  $('status').textContent='Loading sample scene…';
-  vid.src='/assets/sample-scene.mp4';
-  const t=await (await fetch('/assets/sample-scene.vtt')).text();
-  VTT=parseVtt(t);$('watchBtn').disabled=false;
-  $('status').textContent='Sample scene loaded ('+VTT.length+' cues)';
-};
-document.querySelectorAll('#whoRow .pill').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('#whoRow .pill').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');PERSONA=b.dataset.persona;
-  if(BEATS.length)generateNarration();
-});
-$('lang').onchange=e=>{LANG=e.target.value;if(BEATS.length)generateNarration();};
-
-function parseVtt(t){
-  const cues=[];const re=/(\d{2}):(\d{2}):(\d{2})[.,](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[.,](\d{3})/g;let m;
-  const lines=t.split(/\r?\n/);let cur=null;
-  for(const ln of lines){
-    m=/(\d{2}):(\d{2}):(\d{2})[.,](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[.,](\d{3})/.exec(ln);
-    if(m){cur={t0:+m[1]*3600+ +m[2]*60+ +m[3]+ +m[4]/1000,t1:+m[5]*3600+ +m[6]*60+ +m[7]+ +m[8]/1000,text:''};cues.push(cur);}
-    else if(cur&&ln.trim())cur.text+=(cur.text?' ':'')+ln.trim();
-  }
-  return cues;
-}
-function gapsFromVtt(cues,dur){
-  const gaps=[];let prev=0;
-  for(const c of cues){if(c.t0-prev>=0.8)gaps.push({t0:prev,t1:c.t0,dur:+(c.t0-prev).toFixed(2)});prev=Math.max(prev,c.t1);}
-  if(dur&&dur-prev>=1.2)gaps.push({t0:prev,t1:dur,dur:+(dur-prev).toFixed(2)});
-  return gaps.filter(g=>g.t0>0.5);
-}
-async function captureFrames(n=8){
-  const c=document.createElement('canvas');const w=768,h=Math.round(768*vid.videoHeight/vid.videoWidth)||432;
-  c.width=w;c.height=h;const ctx=c.getContext('2d');
-  const frames=[],times=[];const dur=vid.duration||10;
-  const wasPaused=vid.paused, t0=vid.currentTime;
-  for(let i=0;i<n;i++){
-    const t=Math.min(dur-0.1,(i+0.5)*dur/n);
-    vid.currentTime=t;
-    await new Promise(r=>{const h=()=>{vid.removeEventListener('seeked',h);r();};vid.addEventListener('seeked',h);setTimeout(r,1500);});
-    ctx.drawImage(vid,0,0,w,h);
-    frames.push(c.toDataURL('image/jpeg',0.75));times.push(+t.toFixed(1));
-  }
-  vid.currentTime=t0;if(wasPaused)vid.pause();
-  return {frames,times};
-}
-$('watchBtn').onclick=async()=>{
-  $('watchBtn').disabled=true;
-  try{
-    $('status').textContent='Sampling frames…';
-    const {frames,times}=await captureFrames(8);
-    $('status').textContent='Gemma on AMD is watching…';
-    const wr=await fetch('/api/watch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({frames,times,transcript:VTT.map(c=>({t0:c.t0,text:c.text}))})});
-    const wj=await wr.json();if(wj.error)throw new Error(wj.error);
-    if(wj.meta)setBackend(wj.meta);
-    BEATS=wj.beats||[];
-    renderBeats();
-    await generateNarration();
-    $('contrast').classList.remove('hidden');
-  }catch(e){$('status').textContent='Watch failed: '+e.message;}
-  $('watchBtn').disabled=false;
-};
-function setBackend(meta){
-  const el=$('backend');
-  el.textContent=meta.local?('running fully local - '+meta.model+' on '+meta.base):('via AMD Developer Cloud - '+meta.model);
-  el.style.color=meta.local?'#e8b34f':'#6fdc8c';
-}
-function conf(c){return c>=0.85?'hi':c>=0.6?'mid':'lo';}
-function renderBeats(){
-  $('beatCount').textContent='('+BEATS.length+')';
-  $('beats').innerHTML=BEATS.map((b,i)=>`<div class="beat"><div class="t">${b.t}s</div><div class="dot ${conf(b.confidence)}"></div><div><div>${b.visual}</div><div class="basis">basis: ${b.basis||'—'}</div></div></div>`).join('')||'No beats returned.';
-}
-async function generateNarration(){
-  $('status').textContent='Writing the telling ('+PERSONA+', '+LANG+')…';
-  const gaps=gapsFromVtt(VTT,vid.duration);
-  const nr=await fetch('/api/narrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({beats:BEATS,gaps,persona:PERSONA,language:LANG})});
-  const nj=await nr.json();if(nj.error){$('status').textContent=nj.error;return;}
-  if(nj.meta)setBackend(nj.meta);
-  NARR=(nj.narration||[]).map(n=>({...n,gapSec:gaps[n.gap]}));
-  $('status').textContent='';
-  renderNarr();
-}
-function pickVariant(n){
-  const wpm=150/60, budget=(n.gapSec?.dur??2)*wpm*0.85;
-  for(const k of ['full','tight','glimpse']){if(n[k]&&n[k].split(/\s+/).length<=budget)return n[k];}
-  return n.glimpse||n.tight||n.full||'';
-}
-function renderNarr(){
-  if(!NARR)return;
-  $('narrMeta').textContent=`(${PERSONA} · ${LANG})`;
-  $('narr').innerHTML=NARR.map((n,i)=>{
-    const hedged=n.hedged?'mid':(BEATS.filter(b=>(n.grounded_in||[]).includes(BEATS.indexOf(b))).some(b=>b.confidence<0.6)?'mid':'hi');
-    return `<div class="narrline"><div class="gap">gap ${i+1} · ${n.gapSec?n.gapSec.dur+'s silence':'?'} ${hedged==='mid'?'· ⚠ check':''}</div><textarea class="edit" data-i="${i}">${pickVariant(n)}</textarea></div>`;
-  }).join('')||'No narration returned.';
-  $('exportRow').classList.remove('hidden');
-  document.querySelectorAll('textarea.edit').forEach(t=>t.oninput=()=>{NARR[+t.dataset.i].edited=t.value;});
-}
-$('exportBtn').onclick=()=>{
-  if(!NARR)return;
-  const txt=NARR.map((n,i)=>`[${n.gapSec?n.gapSec.t0.toFixed(1)+'s':'?'}] ${n.edited||pickVariant(n)}`).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='sightline-ad-script.txt';a.click();
-};
-$('playBtn').onclick=()=>{if(!NARR||PLAYING)return;PLAYING=true;playTelling();};
-async function playTelling(){
-  vid.currentTime=0;await vid.play();
-  const jobs=NARR.map(n=>({at:(n.gapSec?n.gapSec.t0:0)+0.15,line:n.edited||pickVariant(n),done:false}));
-  const tick=()=>{
-    if(!PLAYING)return;
-    for(const j of jobs){
-      if(!j.done&&vid.currentTime>=j.at){
-        j.done=true;
-        const u=new SpeechSynthesisUtterance(j.line);u.lang=LANGVOICE[LANG]||'en-US';u.rate=1.04;
-        vid.volume=0.25;u.onend=()=>{vid.volume=1;};speechSynthesis.speak(u);
-      }
-    }
-    if(!vid.ended)setTimeout(tick,120);else{PLAYING=false;vid.volume=1;}
-  };tick();
-}
-document.querySelectorAll('#contrast .pill').forEach(b=>b.onclick=()=>{
-  const d=JSON.parse(b.dataset.demo);
-  PERSONA=d.persona;LANG=d.lang;$('lang').value=LANG;
-  document.querySelectorAll('#whoRow .pill').forEach(x=>x.classList.toggle('active',x.dataset.persona===PERSONA));
-  generateNarration().then(()=>{speechSynthesis.cancel();PLAYING=false;$('playBtn').click();});
-});
-</script>
+<footer>
+  <span>Sample scene: <cite>Night of the Living Dead</cite> (George A. Romero, 1968), in the public domain.</span>
+  <span>Sightline is open source under the MIT License. Built for the AMD Developer Hackathon ACT III.</span>
+</footer>
+<script type="module" src="/app.js"></script>
 </body>
 </html>
