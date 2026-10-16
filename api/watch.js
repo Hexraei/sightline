@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     const content = [{ type: 'text', text: `Frames with timestamps (seconds): ${JSON.stringify(times || [])}${transcript ? `\nDialogue transcript: ${JSON.stringify(transcript)}` : ''}\nWrite the scene beats.` }];
     for (const f of frames) content.push({ type: 'image_url', image_url: { url: f } });
     const out = await chat({ messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content }], json: true, maxTokens: 3000 });
-    res.status(200).json({ ...parseJsonLoose(out), meta: backend() });
+    res.status(200).json({ ...parseJsonLoose(out), meta: { ...backend(), model: chat.usedModel || backend().model } });
   } catch (e) {
     res.status(500).json({ error: String(e.message || e) });
   }

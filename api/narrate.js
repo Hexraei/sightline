@@ -34,7 +34,7 @@ Respond with one JSON object: {"narration": [{"gap": index, "full": string, "tig
       ],
       json: true, maxTokens: 4000,
     });
-    res.status(200).json({ ...parseJsonLoose(out), meta: backend() });
+    res.status(200).json({ ...parseJsonLoose(out), meta: { ...backend(), model: chat.usedModel || backend().model } });
   } catch (e) {
     res.status(500).json({ error: String(e.message || e) });
   }
