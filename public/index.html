@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sightline - one film, a million tellings</title>
+<style>
+:root{--bg:#0d0f16;--panel:#151a26;--panel2:#1b2233;--ink:#edf1f8;--muted:#93a1bb;--accent:#5b9dff;--accent2:#3d7fe0;--amber:#e8b458;--red:#e4694e;--line:#253049;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mark{font-size:22px;font-weight:800;letter-spacing:-.5px}.mark span{color:var(--accent)}
+.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.spacer{flex:1}
+main{display:grid;grid-template-columns:minmax(340px,52%) 1fr;gap:18px;padding:18px 22px;max-width:1280px;margin:0 auto}
+@media(max-width:980px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.panel h2{font-size:13px;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+video{width:100%;border-radius:10px;background:#000}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+select,.btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:13.5px}
+.btn{cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);color:#081527;border-color:var(--accent);font-weight:700}
+.btn.primary:hover{background:var(--accent2)}
+.btn:disabled{opacity:.45;cursor:default}
+.pill{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--muted);cursor:pointer;background:transparent}
+.pill.active{background:var(--accent);color:#081527;border-color:var(--accent);font-weight:700}
+.status{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px}
+.beat{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px;align-items:flex-start}
+.beat:first-of-type{border-top:none}
+.dot{flex:0 0 10px;height:10px;border-radius:50%;margin-top:6px}
+.dot.hi{background:var(--accent)}.dot.mid{background:var(--amber)}.dot.lo{background:var(--red)}
+.beat .t{color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 52px}
+.basis{font-size:12px;color:var(--muted)}
+.narrline{padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.narrline:first-of-type{border-top:none}
+.narrline .gap{font-size:12px;color:var(--accent);font-weight:700}
+textarea.edit{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13.5px;margin-top:4px}
+.hidden{display:none!important}
+footer{max-width:1280px;margin:0 auto;padding:4px 22px 28px;color:var(--muted);font-size:12px}
+.contrast{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="mark">Sight<span>line</span></div>
+  <div class="tag">One film, a million tellings</div>
+  <div class="spacer"></div>
+  <select id="lang">
+    <option value="en">English</option><option value="es">Español</option><option value="fr">Français</option>
+    <option value="de">Deutsch</option><option value="pt">Português</option><option value="ja">日本語</option><option value="ar">العربية</option>
+  </select>
+</header>
+<main>
+  <section>
+    <div class="panel">
+      <h2>The film</h2>
+      <video id="vid" controls playsinline></video>
+      <div class="row">
+        <button class="btn" id="upVideo">Load a clip</button>
+        <button class="btn" id="upVtt">Load subtitles (.vtt)</button>
+        <button class="btn" id="sampleBtn">Use the sample scene</button>
+        <input type="file" id="fVideo" accept="video/*" class="hidden">
+        <input type="file" id="fVtt" accept=".vtt,.srt" class="hidden">
+      </div>
+      <div class="row" id="whoRow">
+        <span style="font-size:12.5px;color:var(--muted)">Listening as:</span>
+        <button class="pill active" data-persona="cinematic">Film lover</button>
+        <button class="pill" data-persona="child">7-year-old</button>
+        <button class="pill" data-persona="radio">Hands-free radio cut</button>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="watchBtn" disabled>Watch it with Sightline</button>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="status" id="backend" style="margin-top:-6px"></div>
+      <div class="status" id="backend" style="margin-top:-6px"></div>
+      <div class="contrast hidden" id="contrast">
+        <span style="font-size:12.5px;color:var(--muted);align-self:center">Hear the same scene as:</span>
+        <button class="pill" data-demo='{"persona":"cinematic","lang":"en"}'>🎬 Cinephile · EN</button>
+        <button class="pill" data-demo='{"persona":"child","lang":"es"}'>🧒 Child · ES</button>
+        <button class="pill" data-demo='{"persona":"radio","lang":"ja"}'>🍳 Radio cut · JA</button>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="panel">
+      <h2>What the model saw <span id="beatCount" style="color:var(--accent)"></span></h2>
+      <div id="beats" style="color:var(--muted)">Nothing yet. Load a clip and press "Watch it with Sightline".</div>
+    </div>
+    <div class="panel">
+      <h2>The narration, per listener <span id="narrMeta" style="color:var(--accent)"></span></h2>
+      <div id="narr" style="color:var(--muted)">Narration lines appear here, fitted into the silences between dialogue. Amber or red means the model was unsure and a human should check the line before export.</div>
+      <div class="row hidden" id="exportRow">
+        <button class="btn" id="exportBtn">Approve &amp; export AD script</button>
+        <button class="btn" id="playBtn">▶ Play the telling</button>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>Sightline · AMD Developer Hackathon ACT III · Open models on AMD Developer Cloud · Demo footage: public domain</footer>
+<script>
+const $=id=>document.getElementById(id);
+const vid=$('vid');
+let VTT=[], BEATS=[], NARR=null, PERSONA='cinematic', LANG='en', PLAYING=false;
+
+const LANGVOICE={en:'en-US',es:'es-ES',fr:'fr-FR',de:'de-DE',pt:'pt-PT',ja:'ja-JP',ar:'ar-SA'};
+
+$('upVideo').onclick=()=>$('fVideo').click();
+$('upVtt').onclick=()=>$('fVtt').click();
+$('fVideo').onchange=e=>{const f=e.target.files[0];if(!f)return;vid.src=URL.createObjectURL(f);$('watchBtn').disabled=false;};
+$('fVtt').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{VTT=parseVtt(t);$('status').textContent=VTT.length+' subtitle cues loaded';});};
+$('sampleBtn').onclick=async()=>{
+  $('status').textContent='Loading sample scene…';
+  vid.src='/assets/sample-scene.mp4';
+  const t=await (await fetch('/assets/sample-scene.vtt')).text();
+  VTT=parseVtt(t);$('watchBtn').disabled=false;
+  $('status').textContent='Sample scene loaded ('+VTT.length+' cues)';
+};
+document.querySelectorAll('#whoRow .pill').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#whoRow .pill').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');PERSONA=b.dataset.persona;
+  if(BEATS.length)generateNarration();
+});
+$('lang').onchange=e=>{LANG=e.target.value;if(BEATS.length)generateNarration();};
+
+function parseVtt(t){
+  const cues=[];const re=/(\d{2}):(\d{2}):(\d{2})[.,](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[.,](\d{3})/g;let m;
+  const lines=t.split(/\r?\n/);let cur=null;
+  for(const ln of lines){
+    m=/(\d{2}):(\d{2}):(\d{2})[.,](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[.,](\d{3})/.exec(ln);
+    if(m){cur={t0:+m[1]*3600+ +m[2]*60+ +m[3]+ +m[4]/1000,t1:+m[5]*3600+ +m[6]*60+ +m[7]+ +m[8]/1000,text:''};cues.push(cur);}
+    else if(cur&&ln.trim())cur.text+=(cur.text?' ':'')+ln.trim();
+  }
+  return cues;
+}
+function gapsFromVtt(cues,dur){
+  const gaps=[];let prev=0;
+  for(const c of cues){if(c.t0-prev>=0.8)gaps.push({t0:prev,t1:c.t0,dur:+(c.t0-prev).toFixed(2)});prev=Math.max(prev,c.t1);}
+  if(dur&&dur-prev>=1.2)gaps.push({t0:prev,t1:dur,dur:+(dur-prev).toFixed(2)});
+  return gaps.filter(g=>g.t0>0.5);
+}
+async function captureFrames(n=8){
+  const c=document.createElement('canvas');const w=768,h=Math.round(768*vid.videoHeight/vid.videoWidth)||432;
+  c.width=w;c.height=h;const ctx=c.getContext('2d');
+  const frames=[],times=[];const dur=vid.duration||10;
+  const wasPaused=vid.paused, t0=vid.currentTime;
+  for(let i=0;i<n;i++){
+    const t=Math.min(dur-0.1,(i+0.5)*dur/n);
+    vid.currentTime=t;
+    await new Promise(r=>{const h=()=>{vid.removeEventListener('seeked',h);r();};vid.addEventListener('seeked',h);setTimeout(r,1500);});
+    ctx.drawImage(vid,0,0,w,h);
+    frames.push(c.toDataURL('image/jpeg',0.75));times.push(+t.toFixed(1));
+  }
+  vid.currentTime=t0;if(wasPaused)vid.pause();
+  return {frames,times};
+}
+$('watchBtn').onclick=async()=>{
+  $('watchBtn').disabled=true;
+  try{
+    $('status').textContent='Sampling frames…';
+    const {frames,times}=await captureFrames(8);
+    $('status').textContent='Gemma on AMD is watching…';
+    const wr=await fetch('/api/watch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({frames,times,transcript:VTT.map(c=>({t0:c.t0,text:c.text}))})});
+    const wj=await wr.json();if(wj.error)throw new Error(wj.error);
+    if(wj.meta)setBackend(wj.meta);
+    BEATS=wj.beats||[];
+    renderBeats();
+    await generateNarration();
+    $('contrast').classList.remove('hidden');
+  }catch(e){$('status').textContent='Watch failed: '+e.message;}
+  $('watchBtn').disabled=false;
+};
+function setBackend(meta){
+  const el=$('backend');
+  el.textContent=meta.local?('running fully local - '+meta.model+' on '+meta.base):('via AMD Developer Cloud - '+meta.model);
+  el.style.color=meta.local?'#e8b34f':'#6fdc8c';
+}
+function conf(c){return c>=0.85?'hi':c>=0.6?'mid':'lo';}
+function renderBeats(){
+  $('beatCount').textContent='('+BEATS.length+')';
+  $('beats').innerHTML=BEATS.map((b,i)=>`<div class="beat"><div class="t">${b.t}s</div><div class="dot ${conf(b.confidence)}"></div><div><div>${b.visual}</div><div class="basis">basis: ${b.basis||'—'}</div></div></div>`).join('')||'No beats returned.';
+}
+async function generateNarration(){
+  $('status').textContent='Writing the telling ('+PERSONA+', '+LANG+')…';
+  const gaps=gapsFromVtt(VTT,vid.duration);
+  const nr=await fetch('/api/narrate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({beats:BEATS,gaps,persona:PERSONA,language:LANG})});
+  const nj=await nr.json();if(nj.error){$('status').textContent=nj.error;return;}
+  if(nj.meta)setBackend(nj.meta);
+  NARR=(nj.narration||[]).map(n=>({...n,gapSec:gaps[n.gap]}));
+  $('status').textContent='';
+  renderNarr();
+}
+function pickVariant(n){
+  const wpm=150/60, budget=(n.gapSec?.dur??2)*wpm*0.85;
+  for(const k of ['full','tight','glimpse']){if(n[k]&&n[k].split(/\s+/).length<=budget)return n[k];}
+  return n.glimpse||n.tight||n.full||'';
+}
+function renderNarr(){
+  if(!NARR)return;
+  $('narrMeta').textContent=`(${PERSONA} · ${LANG})`;
+  $('narr').innerHTML=NARR.map((n,i)=>{
+    const hedged=n.hedged?'mid':(BEATS.filter(b=>(n.grounded_in||[]).includes(BEATS.indexOf(b))).some(b=>b.confidence<0.6)?'mid':'hi');
+    return `<div class="narrline"><div class="gap">gap ${i+1} · ${n.gapSec?n.gapSec.dur+'s silence':'?'} ${hedged==='mid'?'· ⚠ check':''}</div><textarea class="edit" data-i="${i}">${pickVariant(n)}</textarea></div>`;
+  }).join('')||'No narration returned.';
+  $('exportRow').classList.remove('hidden');
+  document.querySelectorAll('textarea.edit').forEach(t=>t.oninput=()=>{NARR[+t.dataset.i].edited=t.value;});
+}
+$('exportBtn').onclick=()=>{
+  if(!NARR)return;
+  const txt=NARR.map((n,i)=>`[${n.gapSec?n.gapSec.t0.toFixed(1)+'s':'?'}] ${n.edited||pickVariant(n)}`).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='sightline-ad-script.txt';a.click();
+};
+$('playBtn').onclick=()=>{if(!NARR||PLAYING)return;PLAYING=true;playTelling();};
+async function playTelling(){
+  vid.currentTime=0;await vid.play();
+  const jobs=NARR.map(n=>({at:(n.gapSec?n.gapSec.t0:0)+0.15,line:n.edited||pickVariant(n),done:false}));
+  const tick=()=>{
+    if(!PLAYING)return;
+    for(const j of jobs){
+      if(!j.done&&vid.currentTime>=j.at){
+        j.done=true;
+        const u=new SpeechSynthesisUtterance(j.line);u.lang=LANGVOICE[LANG]||'en-US';u.rate=1.04;
+        vid.volume=0.25;u.onend=()=>{vid.volume=1;};speechSynthesis.speak(u);
+      }
+    }
+    if(!vid.ended)setTimeout(tick,120);else{PLAYING=false;vid.volume=1;}
+  };tick();
+}
+document.querySelectorAll('#contrast .pill').forEach(b=>b.onclick=()=>{
+  const d=JSON.parse(b.dataset.demo);
+  PERSONA=d.persona;LANG=d.lang;$('lang').value=LANG;
+  document.querySelectorAll('#whoRow .pill').forEach(x=>x.classList.toggle('active',x.dataset.persona===PERSONA));
+  generateNarration().then(()=>{speechSynthesis.cancel();PLAYING=false;$('playBtn').click();});
+});
+</script>
+</body>
+</html>
