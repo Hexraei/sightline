@@ -39,7 +39,7 @@ AMD Developer Cloud, Token Factory, Gemma 4, vision-language model, OpenAI-compa
 - [x] Public GitHub repo with MIT license
 - [x] Working prototype + application URL (live, auto-deploys from main)
 - [x] AMD stack for inference (Token Factory) - live, verified end-to-end (Gemma 4 31B primary, automatic fallback)
-- [x] Demo video - sightline-demo.mp4 (70s, captioned, real live flow)
+- [ ] Demo video - Navin records locally (real-flow captures in docs/demo-captures/)
 - [x] Cover image
 - [x] Title / short / long descriptions
 - [x] Tech tags
