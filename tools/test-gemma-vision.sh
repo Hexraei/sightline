@@ -2,7 +2,7 @@
 # Gemma vision smoke test for the wake: extract 6 frames from a clip, ask Gemma on AMD to describe them.
 # Usage: AMD_API_KEY=... AMD_BASE_URL=... AMD_MODEL=gemma-3-27b-it ./test-gemma-vision.sh clip.mp4
 set -e
-CLIP="${1:-/home/sandbox/sightline/assets/test-clip.mp4}"
+CLIP="${1:-/home/sandbox/sightline/public/assets/test-clip.mp4}"
 MODEL="${AMD_MODEL:-gemma-3-27b-it}"
 rm -rf /tmp/sight_frames && mkdir -p /tmp/sight_frames
 if [ "$CLIP" = "photos" ]; then
