@@ -1,18 +1,20 @@
 import { parseVtt, computeGaps, fitLine, speechSeconds, budget, CPS } from './fit.js';
+import { startTour, startTourOnce } from './tour.js';
 
 const $ = sel => document.querySelector(sel);
 const vid = $('#vid');
 
 const LANGS = { en: 'English', es: 'Spanish', fr: 'French', de: 'German', pt: 'Portuguese', ja: 'Japanese', ar: 'Arabic' };
 const BCP47 = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-BR', ja: 'ja-JP', ar: 'ar-SA' };
-const PERSONAS = { cinematic: 'Film lover', child: '7-year-old', radio: 'Hands-free radio cut', custom: 'Custom listener' };
+const PERSONAS = { cinematic: 'Film lover', child: '7-year-old', radio: 'Hands-free radio cut' };
+const FOR_WHOM = { cinematic: 'for a film lover', child: 'for a 7-year-old', radio: 'as a hands-free radio cut' };
 const VARIANT_NAME = { full: 'Full', tight: 'Tight', glimpse: 'Glimpse' };
 const FRAMES = 8;
 const DUCK = 0.25;
 
 const S = {
-  name: '', cues: [], gaps: [], frames: [], times: [], beats: [],
-  persona: 'cinematic', lang: 'en', custom: '',
+  name: '', subsName: '', cues: [], gaps: [], frames: [], times: [], beats: [],
+  persona: 'cinematic', lang: 'en',
   tellings: new Map(), telling: null, req: 0, busy: false,
 };
 
@@ -36,8 +38,7 @@ function tc(s) { // HH:MM:SS.mmm
 const short = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
 const secs = s => `${s.toFixed(1)} s`;
 const level = c => (c >= 0.85 ? 'high' : c >= 0.6 ? 'mid' : 'low');
-const LEVEL_TEXT = { high: 'Clear in frame', mid: 'Check before export', low: 'Unsure, check before export' };
-const personaName = t => (t.persona === 'custom' ? `“${t.custom}”` : PERSONAS[t.persona]);
+const LEVEL_TEXT = { high: 'Clear', mid: 'Check this', low: 'Unsure, check this' };
 
 // ---------- status line + backend badge ----------
 function status(msg, kind = '') {
@@ -83,7 +84,7 @@ function loadVideo(src, name) {
   S.name = name;
   S.gaps = [];
   vid.src = src;
-  status(`Loading ${name}…`);
+  status('');
   sync();
 }
 
@@ -99,41 +100,52 @@ function refreshGaps() {
   renderMap();
 }
 
-$('#pickVideo').onclick = () => $('#fileVideo').click();
-$('#pickVtt').onclick = () => $('#fileVtt').click();
-$('#fileVideo').onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  S.cues = [];
-  loadVideo(URL.createObjectURL(f), f.name);
+const isSubs = f => /\.(vtt|srt)$/i.test(f.name);
+$('#pick').onclick = () => $('#file').click();
+$('#file').onchange = async e => {
+  const files = [...e.target.files];
   e.target.value = '';
-};
-$('#fileVtt').onchange = async e => {
-  const f = e.target.files[0];
-  e.target.value = '';
-  if (!f) return;
-  const cues = parseVtt(await f.text());
-  if (!cues.length) return status(`No subtitle cues found in ${f.name}. Sightline reads WebVTT (.vtt) or SRT files.`, 'error');
-  setCues(cues);
-  status(`${cues.length} subtitle cues loaded from ${f.name}.`);
-  if (S.beats.length) tell().catch(fail);
+  const video = files.find(f => f.type.startsWith('video/') || /\.(mp4|webm|mov|mkv|ogv)$/i.test(f.name));
+  const subs = files.find(isSubs);
+  if (!video && !subs) return status('Choose a video file, its subtitle file (.vtt or .srt), or both.', 'error');
+  if (video) { S.cues = []; S.subsName = ''; loadVideo(URL.createObjectURL(video), video.name); }
+  if (subs) {
+    const cues = parseVtt(await subs.text());
+    if (!cues.length) return status(`${subs.name} has no subtitle lines Sightline can read. Use a WebVTT (.vtt) or SRT file.`, 'error');
+    S.subsName = subs.name;
+    setCues(cues);
+    if (S.beats.length) tell().catch(fail);
+  }
+  renderSource();
 };
 $('#sample').onclick = async () => {
   loadVideo('/assets/sample-scene.mp4', 'Night of the Living Dead (1968), opening scene');
   try {
     const res = await fetch('/assets/sample-scene.vtt');
     if (!res.ok) throw new Error(`sample subtitles returned ${res.status}`);
+    S.subsName = 'sample-scene.vtt';
     setCues(parseVtt(await res.text()));
   } catch (e) { fail(new Error(`Couldn't load the sample subtitles: ${e.message}`)); }
+  renderSource();
 };
 
 vid.addEventListener('loadedmetadata', () => {
   refreshGaps();
   if (!Number.isFinite(vid.duration)) status(`${S.name} has no fixed length, so Sightline can't sample it. Try a saved video file.`, 'error');
-  else if (!S.cues.length) status(`${S.name} loaded. Add its subtitles (.vtt) so Sightline can find the silences between lines, or watch without them.`);
-  else status(`${S.name} loaded with ${S.cues.length} lines of dialogue and ${S.gaps.length} silences to narrate.`);
+  renderSource();
   sync();
 });
+
+// Step 1 summary: what is loaded, and what is still missing.
+function renderSource() {
+  const el = $('#source');
+  if (!S.name) return;
+  const subs = S.cues.length
+    ? `${S.cues.length} lines of dialogue from ${S.subsName}, so Sightline knows when to stay quiet.`
+    : 'No subtitles yet, so Sightline treats the whole clip as one long pause. ';
+  el.replaceChildren(h('strong', null, S.name), '. ', subs);
+  if (!S.cues.length) el.append(h('button', { class: 'link', type: 'button', onclick: () => $('#file').click() }, 'Add subtitles'));
+}
 vid.addEventListener('error', () => { if (vid.getAttribute('src')) status(`This browser can't play ${S.name}. Try an MP4 (H.264) or WebM file.`, 'error'); sync(); });
 vid.addEventListener('timeupdate', movePlayhead);
 vid.addEventListener('seeked', movePlayhead);
@@ -144,24 +156,14 @@ function setDials(persona, lang) {
   S.lang = lang;
   $('#lang').value = lang;
   for (const b of document.querySelectorAll('[data-persona]')) b.setAttribute('aria-pressed', String(b.dataset.persona === persona));
-  $('#customRow').hidden = persona !== 'custom';
 }
 for (const b of document.querySelectorAll('[data-persona]')) {
   b.onclick = () => {
     setDials(b.dataset.persona, S.lang);
-    if (S.persona === 'custom' && !S.custom) return $('#customText').focus();
     if (S.beats.length) tell().catch(fail);
   };
 }
 $('#lang').onchange = e => { setDials(S.persona, e.target.value); if (S.beats.length) tell().catch(fail); };
-$('#customRow').onsubmit = e => {
-  e.preventDefault();
-  S.custom = $('#customText').value.trim();
-  if (!S.custom) return status('Describe the listener first, for example "a sound designer who wants every texture".', 'error');
-  if (S.beats.length) tell().catch(fail);
-  else status(`Listener set. Press "Watch it with Sightline" to write narration for ${S.custom}.`);
-};
-
 // ---------- watching ----------
 const seek = t => new Promise(resolve => {
   const done = () => { vid.removeEventListener('seeked', done); clearTimeout(timer); resolve(); };
@@ -178,7 +180,7 @@ async function captureFrames() {
   const frames = [], times = [];
   for (let i = 0; i < FRAMES; i++) {
     const t = +((i + 0.5) * vid.duration / FRAMES).toFixed(2);
-    status(`Sampling frame ${i + 1} of ${FRAMES} at ${short(t)}…`);
+    status(`Looking at moment ${i + 1} of ${FRAMES}…`);
     await seek(t);
     ctx.drawImage(vid, 0, 0, w, hgt);
     frames.push(canvas.toDataURL('image/jpeg', 0.8));
@@ -196,7 +198,7 @@ async function watch() {
   S.busy = true; sync();
   try {
     const { frames, times } = await captureFrames();
-    status(`The model is watching ${FRAMES} frames…`);
+    status('Describing what’s on screen…');
     const data = await api('/api/watch', { frames, times, transcript: S.cues.map(c => ({ t0: c.t0, text: c.text })) });
     showMeta(data);
     S.beats = (data.beats || [])
@@ -204,7 +206,7 @@ async function watch() {
       .filter(b => b.visual)
       .sort((a, b) => a.t - b.t);
     renderBeats();
-    if (!S.beats.length) throw new Error('The model returned no scene beats. Press "Watch it with Sightline" to try again, or try a brighter clip.');
+    if (!S.beats.length) throw new Error('Sightline couldn’t describe this clip. Press "Watch it with Sightline" to try again, or try a brighter clip.');
     await tell();
   } catch (e) {
     renderBeats();
@@ -230,21 +232,20 @@ function lineConfidence(n, g) {
 // Returns the telling for the current dials, from cache or the API; null if superseded by a newer request.
 async function tell() {
   const { persona, lang } = S;
-  const custom = persona === 'custom' ? S.custom : '';
-  const key = `${persona}|${lang}|${custom}`;
+  const key = `${persona}|${lang}`;
   if (S.tellings.has(key)) {
     S.telling = S.tellings.get(key);
     renderNarration(); renderMap();
-    status(`Narration for ${personaName(S.telling)} in ${LANGS[lang]}, ready to play.`);
+    status(`Narration ${FOR_WHOM[persona]}, in ${LANGS[lang]}, is ready. Press Play with narration to listen.`);
     return S.telling;
   }
-  if (!S.gaps.length) throw new Error('This clip has no silences long enough to narrate.');
+  if (!S.gaps.length) throw new Error('This clip has no pauses long enough to describe.');
   const my = ++S.req;
-  status(`Writing narration for ${persona === 'custom' ? custom : PERSONAS[persona]} in ${LANGS[lang]}…`);
+  status(`Writing narration ${FOR_WHOM[persona]}, in ${LANGS[lang]}…`);
   $('#narrPanel').setAttribute('aria-busy', 'true');
   try {
     const data = await api('/api/narrate', {
-      beats: S.beats, gaps: S.gaps.map(({ t0, t1 }) => ({ t0, t1 })), persona, language: lang, ...(custom ? { custom } : {}),
+      beats: S.beats, gaps: S.gaps.map(({ t0, t1 }) => ({ t0, t1 })), persona, language: lang,
     });
     if (my !== S.req) return null;
     showMeta(data);
@@ -255,13 +256,13 @@ async function tell() {
       const fit = n && fitLine(n, g);
       return { g, i, variant: fit?.variant || null, text: fit?.text || '', edited: false, conf: n ? lineConfidence(n, g) : null };
     });
-    const t = { key, persona, lang, custom, lines, meta: data.mock ? null : data.meta };
+    const t = { key, persona, lang, lines, meta: data.mock ? null : data.meta };
     S.tellings.set(key, t);
     S.telling = t;
     renderNarration(); renderMap();
     const fitted = lines.filter(l => l.text).length;
     const checks = lines.filter(l => l.text && level(l.conf) !== 'high').length;
-    status(`${fitted} of ${lines.length} silences narrated for ${personaName(t)} in ${LANGS[lang]}.${checks ? ` ${checks} marked to check before export.` : ''}`);
+    status(`Ready: ${fitted} descriptions${checks ? `, ${checks} to check` : ''}. Press Play with narration to listen.`);
     return t;
   } finally {
     if (my === S.req) $('#narrPanel').removeAttribute('aria-busy');
@@ -353,7 +354,7 @@ function startNarration(from = 0) {
   const lang = S.telling.lang;
   if (!('speechSynthesis' in window)) status('This browser has no speech engine, so narration will show as captions only.', 'error');
   else if (!pickVoice(lang)) status(`No ${LANGS[lang]} voice is installed on this device. The default voice will read the ${LANGS[lang]} lines; captions show the text.`, 'error');
-  else status(`Playing with ${personaName(S.telling)} narration in ${LANGS[lang]}. Film audio dips while the narrator speaks.`);
+  else status(`Playing the narration ${FOR_WHOM[S.telling.persona]}, in ${LANGS[lang]}. The film’s sound dips while the narrator speaks.`);
   vid.currentTime = from;
   P.prev = from - 0.05;
   vid.play().catch(e => fail(new Error(`Playback didn't start: ${e.message}`)));
@@ -409,7 +410,7 @@ $('#export').onclick = () => {
     'SIGHTLINE AUDIO DESCRIPTION SCRIPT',
     '',
     `Programme   ${S.name}`,
-    `Listener    ${t.persona === 'custom' ? t.custom : PERSONAS[t.persona]}`,
+    `Listener    ${PERSONAS[t.persona]}`,
     `Language    ${LANGS[t.lang]} (${t.lang})`,
     `Model       ${model}`,
     `Generated   ${new Date().toISOString()}`,
@@ -437,8 +438,11 @@ function sync() {
   $('#play').textContent = P.on ? 'Stop narration' : 'Play with narration';
   $('#play').setAttribute('aria-pressed', String(P.on));
   $('#export').disabled = !S.telling;
-  $('#contrast').hidden = !S.telling && !S.tellings.size;
-  $('#film').toggleAttribute('data-empty', !vid.getAttribute('src'));
+  $('#contrast').hidden = !S.telling;
+  $('#screen').toggleAttribute('data-empty', !vid.getAttribute('src'));
+  $('#results').hidden = !S.frames.length;
+  $('#step-film').classList.toggle('done', ready);
+  $('#step-watch').classList.toggle('done', !!S.telling);
 }
 
 const frameFor = t => {
@@ -451,56 +455,43 @@ const seekBtn = (t, label) => h('button', { class: 'tc', type: 'button', title: 
 
 function renderBeats(pending = false) {
   const list = $('#beats');
-  $('#beatCount').textContent = S.beats.length ? `${S.beats.length} beats from ${S.frames.length} frames. ` : '';
   $('#beatsPanel').setAttribute('aria-busy', String(pending));
   if (pending) {
     list.replaceChildren(...S.frames.map((f, i) => h('li', { class: 'beat pending' },
       h('img', { class: 'thumb', src: f, alt: '' }),
-      h('div', { class: 'beat-body' }, h('p', { class: 'beat-meta' }, short(S.times[i])), h('p', { class: 'visual' }, 'Reading the frame…')))));
+      h('div', null, h('p', { class: 'meta' }, short(S.times[i])), h('p', { class: 'visual' }, 'Looking…')))));
     return;
   }
-  if (!S.beats.length) {
-    list.replaceChildren(h('li', { class: 'empty' }, 'Load a clip and press “Watch it with Sightline”. Each scene beat appears here with the frame it came from and how sure the model is.'));
-    return;
-  }
+  if (!S.beats.length) return list.replaceChildren();
   list.replaceChildren(...S.beats.map(b => {
     const lv = level(b.confidence);
     const src = frameFor(b.t);
     return h('li', { class: `beat ${lv}` },
       src ? h('img', { class: 'thumb', src, alt: '' }) : h('span', { class: 'thumb' }),
-      h('div', { class: 'beat-body' },
-        h('p', { class: 'beat-meta' }, seekBtn(b.t, 'Beat'),
-          h('span', { class: `conf ${lv}` }, h('span', { class: 'dot', 'aria-hidden': 'true' }), `${Math.round(b.confidence * 100)}%  ${LEVEL_TEXT[lv]}`)),
+      h('div', null,
+        h('p', { class: 'meta' }, seekBtn(b.t, 'Moment'),
+          h('span', { class: `conf ${lv}` }, h('span', { class: 'dot', 'aria-hidden': 'true' }), LEVEL_TEXT[lv])),
         h('p', { class: 'visual' }, b.visual),
-        h('p', { class: 'basis' }, h('span', { class: 'basis-label' }, 'Basis'), ' ', b.basis || 'none given')));
+        b.basis ? h('p', { class: 'basis' }, `Based on: ${b.basis}`) : null));
   }));
 }
 
+// Shown only when an edit no longer fits its pause.
 function fitNote(line) {
-  const need = speechSeconds(line.text), room = budget(line.g);
-  const over = need - room;
-  return over > 0
-    ? h('p', { class: 'fitnote over' }, `About ${secs(need)} of speech: ${secs(over)} longer than the silence. Shorten it so it doesn’t talk over dialogue.`)
-    : h('p', { class: 'fitnote' }, `About ${secs(need)} of speech in a ${secs(room)} window.`);
+  const over = speechSeconds(line.text) - budget(line.g);
+  return over > 0 ? h('p', { class: 'over' }, `About ${secs(over)} too long for this pause. Shorten it so it doesn’t talk over the dialogue.`) : '';
 }
 
 function renderNarration() {
   const t = S.telling;
   const list = $('#narr');
-  $('#narrFor').textContent = t ? `for ${personaName(t)} in ${LANGS[t.lang]}` : '';
+  $('#narrFor').textContent = t ? `${FOR_WHOM[t.persona]}, in ${LANGS[t.lang]}` : '';
   sync();
-  if (!t) {
-    list.replaceChildren(h('li', { class: 'empty' }, S.beats.length
-      ? 'Choose a listener and language to write narration for this scene.'
-      : 'Narration lines appear here, one per silence, sized to fit between the lines of dialogue. Edit any line before export.'));
-    return;
-  }
-  list.replaceChildren(...t.lines.map(l => {
-    const span = l.g.t1 - l.g.t0;
-    if (!l.text) {
-      return h('li', { class: 'line skipped', 'data-gap': l.i },
-        h('p', { class: 'line-meta' }, seekBtn(l.g.t0, 'Silence'), h('span', null, `${secs(span)} silence, left quiet: no version of the line fits.`)));
-    }
+  if (!t) return list.replaceChildren();
+  const told = t.lines.filter(l => l.text);
+  const quiet = t.lines.length - told.length;
+  $('#narrHint').textContent = `Each line fits a pause in the dialogue. Edit anything before you export.${quiet ? ` ${quiet} pause${quiet > 1 ? 's were' : ' was'} too short and left quiet.` : ''}`;
+  list.replaceChildren(...told.map(l => {
     const lv = level(l.conf);
     const id = `line-${l.i}`;
     const variant = h('span', { class: 'variant' }, l.edited ? 'Edited' : VARIANT_NAME[l.variant]);
@@ -513,12 +504,11 @@ function renderNarration() {
       note.replaceChildren(fitNote(l));
     };
     return h('li', { class: `line ${lv}`, 'data-gap': l.i },
-      h('p', { class: 'line-meta' },
-        seekBtn(l.g.t0, 'Silence'),
-        h('span', null, `${secs(span)} silence`),
+      h('p', { class: 'meta' },
+        seekBtn(l.g.t0, 'Pause'),
         variant,
-        h('span', { class: `conf ${lv}` }, h('span', { class: 'dot', 'aria-hidden': 'true' }), LEVEL_TEXT[lv])),
-      h('label', { class: 'sr-only', for: id }, `Narration for the silence at ${short(l.g.t0)}`),
+        lv === 'high' ? null : h('span', { class: `conf ${lv}` }, h('span', { class: 'dot', 'aria-hidden': 'true' }), LEVEL_TEXT[lv])),
+      h('label', { class: 'sr-only', for: id }, `Description at ${short(l.g.t0)}`),
       ta, note);
   }));
 }
@@ -526,23 +516,16 @@ function renderNarration() {
 function renderMap() {
   const d = vid.duration;
   const track = $('#map');
-  const legend = $('#mapLegend');
-  if (!Number.isFinite(d) || !d) { track.replaceChildren(); legend.textContent = ''; return; }
+  if (!Number.isFinite(d) || !d) return track.replaceChildren();
   const pct = x => `${(x / d) * 100}%`;
   const lines = S.telling?.lines;
   track.replaceChildren(
     ...S.cues.map(c => h('span', { class: 'seg dialogue', style: `left:${pct(c.t0)};width:${pct(c.t1 - c.t0)}` })),
-    ...S.gaps.map((g, i) => {
-      const state = !lines ? 'open' : lines[i].text ? 'told' : 'quiet';
-      const span = h('span', { class: `seg gap ${state}`, style: `left:${pct(g.t0)};width:${pct(g.t1 - g.t0)}` });
-      if (state === 'told') span.append(h('span', { class: 'speech', style: `width:${Math.min(100, (speechSeconds(lines[i].text) / (g.t1 - g.t0)) * 100)}%` }));
-      return span;
-    }),
-    ...S.beats.map(b => h('span', { class: `tick ${level(b.confidence)}`, style: `left:${pct(b.t)}` })),
+    ...(lines || []).filter(l => l.text).map(({ g, text }) =>
+      h('span', { class: 'seg told', style: `left:${pct(g.t0)};width:${pct(g.t1 - g.t0)}` },
+        h('span', { class: 'speech', style: `width:${Math.min(100, (speechSeconds(text) / (g.t1 - g.t0)) * 100)}%` }))),
     h('span', { class: 'playhead', id: 'playhead' }),
   );
-  const told = lines ? lines.filter(l => l.text).length : 0;
-  legend.textContent = `${S.cues.length} lines of dialogue, ${S.gaps.length} silences${lines ? `, ${told} narrated` : ''}.`;
   movePlayhead();
 }
 function movePlayhead() {
@@ -575,7 +558,6 @@ const MOCK_VOICE = {
   cinematic: s => s,
   child: s => `Look! ${s.charAt(0).toLowerCase()}${s.slice(1)}`,
   radio: s => `On screen now: ${s.charAt(0).toLowerCase()}${s.slice(1)}`,
-  custom: s => s,
 };
 const MOCK = {
   '/api/watch': ({ times }) => ({
@@ -596,5 +578,24 @@ const MOCK = {
   }),
 };
 
+// ---------- guided tour ----------
+const TOUR = [
+  { title: 'Welcome to Sightline',
+    body: 'Sightline describes a film out loud for people who can’t see the screen. It finds the pauses between lines of dialogue and fills them with a short description of what’s happening. Here’s how it works in five steps.' },
+  { target: '#step-film', title: 'Choose a film',
+    body: 'Start with the sample scene, or use your own video. Add its subtitle file too, so Sightline knows when people are talking and stays quiet.' },
+  { target: '#step-listener', title: 'Choose who’s listening',
+    body: 'The same scene is described differently for each listener: rich detail for a film lover, simple words for a child, or a dialogue recap for someone who’s busy. Pick a language too.' },
+  { target: '#step-watch', title: 'Let Sightline watch',
+    body: 'Sightline looks at 8 moments from the film and writes one description for each pause.' },
+  { target: '#results', fallback: '#step-watch', title: 'Check the descriptions',
+    body: 'The descriptions appear under the steps. Amber or red marks mean Sightline wasn’t sure, so read those first. You can edit any line, then export the script.' },
+  { target: '#playbox', title: 'Listen',
+    body: 'Press Play with narration. The film’s sound gets quieter while the narrator speaks. After that, hear the same scene as a different listener with one click.' },
+];
+$('#tourBtn').onclick = () => startTour(TOUR);
+
 setDials('cinematic', 'en');
+status('Start with step 1: choose a film.');
 renderBeats(); renderNarration(); renderMap(); sync();
+startTourOnce(TOUR);

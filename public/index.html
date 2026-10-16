@@ -33,74 +33,48 @@ button,select,input,textarea{font:inherit;color:inherit}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
 /* masthead */
-.masthead{display:flex;align-items:baseline;gap:var(--s5);flex-wrap:wrap;max-width:1440px;margin:0 auto;padding:var(--s6) var(--s6) var(--s4)}
+.masthead{display:flex;align-items:baseline;gap:var(--s2) var(--s5);flex-wrap:wrap;max-width:1440px;margin:0 auto;padding:var(--s6) var(--s6) var(--s5)}
 .wordmark{font:400 2.75rem/1 var(--serif);letter-spacing:-.01em}
 .motto{font:italic 400 1.5rem/1.2 var(--serif);color:var(--muted)}
-.lede{max-width:1440px;margin:0 auto;padding:0 var(--s6) var(--s5);color:var(--muted);font-size:1.0625rem;max-width:min(1440px,100%)}
-.lede p{max-width:62ch}
+.masthead .link{margin-left:auto}
 
 main{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s7);max-width:1440px;margin:0 auto;padding:0 var(--s6) var(--s7);align-items:start}
 .stage-col{position:sticky;top:var(--s5)}
-h2{font:400 1.875rem/1.15 var(--serif);margin-bottom:var(--s3)}
-h2 .for{display:block;font-size:1.375rem;font-style:italic;color:var(--muted)}
-.hint{color:var(--muted);font-size:.9375rem;max-width:60ch;margin-bottom:var(--s4)}
+h2{font:400 1.75rem/1.15 var(--serif)}
 
 /* the screen */
 .screen{background:var(--stage);border:1px solid var(--line);border-radius:2px;padding:var(--s3)}
-video{display:block;width:100%;max-height:min(44vh,600px);background:var(--stage);object-fit:contain}
-#film[data-empty] video{aspect-ratio:16/9}
-#film[data-empty] video{background:
-  repeating-linear-gradient(90deg,transparent 0 calc(12.5% - 1px),#ffffff08 calc(12.5% - 1px) 12.5%),var(--stage)}
+video{display:block;width:100%;max-height:min(46vh,600px);background:var(--stage);object-fit:contain}
+.screen[data-empty] video{aspect-ratio:16/9}
 .adline{min-height:2.9em;padding:var(--s3) var(--s2) var(--s1);font:italic 400 1.5rem/1.2 var(--serif);color:var(--light);text-align:center;text-wrap:balance}
-.adline:empty::before{content:"Narration is shown here as it is spoken.";color:#ffffff38}
+.adline:empty::before{content:"Spoken descriptions appear here.";color:#ffffff38}
 
 /* silence map */
-.map-wrap{margin-top:var(--s3)}
-.map{position:relative;height:28px;background:var(--raise);border-radius:2px;cursor:pointer;overflow:hidden}
+.map{position:relative;height:24px;margin-top:var(--s3);background:var(--raise);border-radius:2px;cursor:pointer;overflow:hidden}
 .seg{position:absolute;top:0;bottom:0}
-.seg.dialogue{top:9px;bottom:9px;background:#5d6468}
-.seg.gap.open{border-left:1px solid #ffffff20}
-.seg.gap.told{background:#efe6d214;border-left:1px solid var(--light)}
-.seg.gap.told .speech{display:block;height:100%;background:var(--light);opacity:.85}
-.seg.gap.quiet{background:repeating-linear-gradient(135deg,transparent 0 3px,#ffffff12 3px 5px)}
-.tick{position:absolute;top:2px;width:5px;height:5px;border-radius:50%;margin-left:-2.5px}
-.tick.high{background:var(--high)}.tick.mid{background:var(--mid)}.tick.low{background:var(--low)}
+.seg.dialogue{top:8px;bottom:8px;background:#5d6468}
+.seg.told{border-left:1px solid var(--light)}
+.seg.told .speech{display:block;height:100%;background:var(--light);opacity:.85}
 .playhead{position:absolute;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 2px var(--room);pointer-events:none}
-.map-key{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);margin-top:var(--s2);font-size:.8125rem;color:var(--muted)}
+.map-key{display:flex;gap:var(--s4);margin-top:var(--s2);font-size:.8125rem;color:var(--muted)}
 .key{display:inline-flex;align-items:center;gap:var(--s2)}
-.swatch{width:14px;height:8px;border-radius:1px}
-.swatch.dialogue{background:#5d6468}.swatch.told{background:var(--light)}
-.swatch.quiet{background:repeating-linear-gradient(135deg,transparent 0 2px,#ffffff40 2px 4px);outline:1px solid #ffffff20}
-#mapLegend{margin-left:auto}
+.swatch{width:14px;height:8px;border-radius:1px;background:#5d6468}
+.swatch.told{background:var(--light)}
 
 /* controls */
-.row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
-.film-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);margin-bottom:var(--s3)}
-.film-head h2{margin:0}
 .btn{min-height:44px;padding:var(--s2) var(--s4);border:1px solid var(--line);border-radius:4px;background:var(--raise);cursor:pointer;font-weight:500;font-size:.9375rem}
 .btn:hover:not(:disabled){border-color:#4a5257}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn.primary{background:var(--light);color:var(--room);border-color:var(--light);font-weight:600;font-size:1.0625rem;padding:var(--s3) var(--s5)}
 .btn.primary:hover:not(:disabled){background:#fff}
-.btn.quiet{background:transparent}
+.link{min-height:44px;padding:0 var(--s1);border:0;background:none;color:var(--ink);text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:3px;cursor:pointer;font-size:.9375rem}
+.link:hover{text-decoration-color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
 
-.dials{display:grid;grid-template-columns:auto 1fr;gap:var(--s3) var(--s5);align-items:center}
-.dial-label{color:var(--muted);font-size:.9375rem}
-.pills{display:flex;flex-wrap:wrap;gap:var(--s2)}
-.pill{min-height:40px;padding:var(--s1) var(--s4);border:1px solid var(--line);border-radius:999px;background:transparent;cursor:pointer;font-size:.9375rem}
-.pill:hover{border-color:#4a5257}
-.pill[aria-pressed="true"]{background:var(--ink);color:var(--room);border-color:var(--ink);font-weight:600}
-select{min-height:40px;padding:var(--s1) var(--s6) var(--s1) var(--s3);background:var(--raise) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8a69f' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right .75rem center;border:1px solid var(--line);border-radius:4px;appearance:none;cursor:pointer;justify-self:start}
-.custom{grid-column:2;display:flex;gap:var(--s2)}
-.custom input{flex:1;min-width:0;min-height:40px;padding:var(--s1) var(--s3);background:var(--raise);border:1px solid var(--line);border-radius:4px}
-
-.action{margin-top:var(--s4);display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);align-items:center;min-height:2rem}
-.watch{margin-top:var(--s5)}
-#beatsPanel{margin-top:var(--s7)}
-.status{flex:1 1 18rem;font-size:.9375rem;color:var(--muted);min-height:1.5em}
+.status{margin-top:var(--s4);font-size:.9375rem;color:var(--muted);min-height:1.5em}
 .status[data-kind="error"]{color:var(--low)}
 .status[data-kind="error"]::before{content:"! ";font-weight:600}
-.badge{display:inline-flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);border-radius:999px;font-size:.8125rem;font-weight:500;border:1px solid}
+.badge{display:inline-flex;align-items:center;gap:var(--s2);margin-top:var(--s2);padding:var(--s1) var(--s3);border-radius:999px;font-size:.8125rem;font-weight:500;border:1px solid}
 .badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
 .badge[data-kind="cloud"]{color:var(--high);border-color:#8fc79d55}
 .badge[data-kind="local"]{color:var(--mid);border-color:#e2aa5855}
@@ -110,68 +84,91 @@ select{min-height:40px;padding:var(--s1) var(--s6) var(--s1) var(--s3);backgroun
 .contrast{flex:1 1 24rem}
 .contrast h3{font:italic 400 1.125rem/1.2 var(--serif);color:var(--muted);margin-bottom:var(--s2)}
 .tellings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}
-.telling{display:flex;flex-direction:column;align-items:flex-start;gap:0;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;text-align:left}
+.telling{display:flex;flex-direction:column;align-items:flex-start;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer;text-align:left}
 .telling:hover{border-color:var(--light)}
 .telling strong{font:400 1.375rem/1.1 var(--serif)}
 .telling span{color:var(--muted);font-size:.875rem}
 
-/* review column */
-.review{min-width:0}
+/* steps */
+.step{display:grid;grid-template-columns:2.5rem minmax(0,1fr);gap:0 var(--s4);padding:var(--s5) 0;border-top:1px solid var(--line)}
+.flow>.step:first-child{border-top:0;padding-top:0}
+.step-num{grid-row:span 2;width:2.5rem;height:2.5rem;border-radius:50%;border:1px solid #4a5257;display:grid;place-items:center;font:400 1.375rem/1 var(--serif);color:var(--muted)}
+.step.done .step-num{background:var(--ink);border-color:var(--ink);color:var(--room)}
+.step h2{align-self:center}
+.step-body{margin-top:var(--s3)}
+.step-body .row+*{margin-top:var(--s3)}
+.note{color:var(--muted);font-size:.9375rem;max-width:52ch}
+.note strong{color:var(--ink);font-weight:500}
+.pills{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.pill{min-height:44px;padding:var(--s1) var(--s4);border:1px solid var(--line);border-radius:999px;background:transparent;cursor:pointer;font-size:.9375rem}
+.pill:hover{border-color:#4a5257}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--room);border-color:var(--ink);font-weight:600}
+.field{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s3);color:var(--muted);font-size:.9375rem}
+select{min-height:44px;padding:var(--s1) var(--s6) var(--s1) var(--s3);background:var(--raise) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8a69f' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right .75rem center;border:1px solid var(--line);border-radius:4px;appearance:none;cursor:pointer;color:var(--ink)}
+
+/* results */
+.results section{margin-top:var(--s6)}
+.results h2{margin-bottom:var(--s2)}
+.results h2 .for{display:block;font-size:1.25rem;font-style:italic;color:var(--muted)}
+.hint{color:var(--muted);font-size:.9375rem;max-width:56ch;margin-bottom:var(--s3)}
 .list{list-style:none;padding:0}
-.empty{color:var(--muted);padding:var(--s4) 0;border-top:1px solid var(--line);max-width:52ch}
-.beat{display:grid;grid-template-columns:112px 1fr;gap:var(--s4);padding:var(--s4) 0;border-top:1px solid var(--line)}
-.thumb{display:block;width:112px;aspect-ratio:4/3;object-fit:cover;background:var(--raise);border-radius:2px;filter:grayscale(.15)}
+.beat{display:grid;grid-template-columns:96px 1fr;gap:var(--s4);padding:var(--s3) 0;border-top:1px solid var(--line)}
+.thumb{display:block;width:96px;aspect-ratio:4/3;object-fit:cover;background:var(--raise);border-radius:2px}
 .beat.mid .thumb{outline:2px solid #e2aa5899;outline-offset:2px}
 .beat.low .thumb{outline:2px solid #e27a6399;outline-offset:2px}
-.beat-meta,.line-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);font-size:.875rem;color:var(--muted)}
-.visual{font:400 1.375rem/1.3 var(--serif);margin-top:var(--s1)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);font-size:.875rem;color:var(--muted)}
+.visual{font:400 1.3125rem/1.3 var(--serif);margin-top:2px}
 .beat.pending .visual{color:var(--faint);font-style:italic}
-.basis{margin-top:var(--s1);font-size:.875rem;color:var(--muted)}
-.basis-label{color:var(--faint);font-style:italic}
+.basis{margin-top:2px;font-size:.875rem;color:var(--faint)}
 .tc{min-height:28px;padding:0 var(--s2);margin-left:calc(-1 * var(--s2));border:0;border-radius:2px;background:transparent;color:var(--ink);font-weight:500;cursor:pointer}
 .tc:hover{background:var(--raise)}
 .conf{display:inline-flex;align-items:center;gap:var(--s2)}
 .dot{width:9px;height:9px;border-radius:50%}
 .conf.high .dot{background:var(--high)}.conf.mid .dot{background:var(--mid)}.conf.low .dot{background:var(--low)}
 .conf.mid{color:var(--mid)}.conf.low{color:var(--low)}
-
-#narrPanel{margin-top:var(--s7)}
-.line{padding:var(--s4) 0 var(--s4) var(--s4);border-top:1px solid var(--line);border-left:2px solid transparent;margin-left:calc(-1 * var(--s4) - 2px);transition:border-color .3s,background-color .3s}
+.line{padding:var(--s3) 0 var(--s3) var(--s4);border-top:1px solid var(--line);border-left:2px solid transparent;margin-left:calc(-1 * var(--s4) - 2px);transition:border-color .3s,background-color .3s}
 .line.speaking{border-left-color:var(--light);background:#efe6d20d}
-.line.skipped .line-meta{color:var(--faint)}
 .variant{padding:0 var(--s2);border:1px solid var(--line);border-radius:2px;color:var(--ink);font-size:.8125rem}
 textarea{display:block;width:100%;margin-top:var(--s2);padding:var(--s2) var(--s3);background:var(--raise);border:1px solid var(--line);border-radius:4px;font-size:1.0625rem;line-height:1.5;resize:vertical;field-sizing:content;min-height:2.6em}
 textarea:focus{border-color:#5a6267}
-.fitnote{margin-top:var(--s1);font-size:.8125rem;color:var(--faint)}
-.fitnote.over{color:var(--mid)}
-.export{margin-top:var(--s5);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
-.export p{color:var(--muted);font-size:.875rem;flex:1 1 16rem}
-
+.over{margin-top:var(--s1);font-size:.8125rem;color:var(--mid)}
+.export{margin-top:var(--s4);display:flex;gap:var(--s3) var(--s4);align-items:center;flex-wrap:wrap}
+.export p{color:var(--muted);font-size:.875rem;flex:1 1 14rem}
 [aria-busy="true"] .list{opacity:.6}
 
+/* guided tour */
+.tour{position:fixed;inset:0;z-index:10}
+.tour-spot{position:fixed;border-radius:6px;box-shadow:0 0 0 200vmax #000000b8;outline:2px solid var(--light);outline-offset:4px;transition:all .25s ease;pointer-events:none}
+.tour-spot.none{width:0;height:0;top:50%;left:50%;outline:0}
+.tour-card{position:fixed;width:min(360px,calc(100vw - 2rem));padding:var(--s5);background:var(--raise);border:1px solid #4a5257;border-radius:6px;transition:top .25s ease,left .25s ease}
+.tour-card .count{font-size:.8125rem;color:var(--muted)}
+.tour-card h2{margin:var(--s1) 0 var(--s2)}
+.tour-card p{color:var(--ink);font-size:.9375rem}
+.tour-card .row{margin-top:var(--s5);justify-content:space-between}
+.tour-card .row .btn.primary{font-size:.9375rem;padding:var(--s2) var(--s4)}
+
 footer{max-width:1440px;margin:0 auto;padding:var(--s5) var(--s6) var(--s6);border-top:1px solid var(--line);color:var(--faint);font-size:.8125rem;display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5)}
-footer a{color:var(--muted)}
 
 @media (max-width:1100px){
   main{grid-template-columns:1fr;gap:var(--s6)}
-  .stage-col{position:static}
-  #narrPanel{margin-top:var(--s6)}
+  .stage-col{position:static;order:4}
+  .flow{display:contents}
+  #step-film{order:1}#step-listener{order:2}#step-watch{order:3}.results{order:5}
+  .step{padding:var(--s4) 0}
+  .step:first-child{border-top:0}
 }
 @media (max-width:640px){
-  .masthead{padding:var(--s5) var(--s4) var(--s3);gap:var(--s2)}
+  .masthead{padding:var(--s5) var(--s4) var(--s4)}
   .wordmark{font-size:2.25rem}.motto{font-size:1.25rem}
-  .lede,main{padding-left:var(--s4);padding-right:var(--s4)}
+  main{padding-left:var(--s4);padding-right:var(--s4)}
   footer{padding-left:var(--s4);padding-right:var(--s4)}
   .screen{padding:var(--s1)}
   .adline{font-size:1.25rem}
-  .dials{grid-template-columns:1fr;gap:var(--s2)}
-  .custom{grid-column:1}
-  .dial-label:not(:first-child){margin-top:var(--s2)}
   .tellings{grid-template-columns:1fr}
-  .beat{grid-template-columns:80px 1fr;gap:var(--s3)}
-  .thumb{width:80px}
-  .visual{font-size:1.25rem}
-  #mapLegend{margin-left:0;flex-basis:100%}
+  .beat{grid-template-columns:72px 1fr;gap:var(--s3)}
+  .thumb{width:72px}
+  .visual{font-size:1.1875rem}
+  .tour-card{left:var(--s4)!important;right:var(--s4);bottom:var(--s4);top:auto!important;width:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -180,95 +177,97 @@ footer a{color:var(--muted)}
 <header class="masthead">
   <h1 class="wordmark">Sightline</h1>
   <p class="motto">One film, a million tellings.</p>
+  <button class="link" id="tourBtn" type="button">How it works</button>
 </header>
-<div class="lede"><p>Sightline watches a scene, finds the silences between lines of dialogue, and writes audio description that fits inside them, retold for whoever is listening, in their own language.</p></div>
 
 <main>
   <div class="stage-col">
-    <section id="film" aria-labelledby="h-film" data-empty>
-      <div class="film-head">
-        <h2 id="h-film">The film</h2>
-        <div class="row sources">
-          <button class="btn" id="pickVideo" type="button">Load a clip</button>
-          <button class="btn" id="pickVtt" type="button">Load subtitles (.vtt)</button>
-          <button class="btn quiet" id="sample" type="button">Use the sample scene</button>
-          <input type="file" id="fileVideo" accept="video/*" hidden>
-          <input type="file" id="fileVtt" accept=".vtt,.srt,text/vtt" hidden>
+    <div class="screen" id="screen" data-empty>
+      <video id="vid" controls playsinline preload="metadata"></video>
+      <p class="adline" id="adline" aria-hidden="true"></p>
+    </div>
+    <div class="map" id="map" aria-hidden="true" title="Click to jump"></div>
+    <div class="map-key" aria-hidden="true">
+      <span class="key"><span class="swatch"></span>Dialogue</span>
+      <span class="key"><span class="swatch told"></span>Description</span>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <span class="badge" id="badge" hidden></span>
+    <div class="playback" id="playbox">
+      <button class="btn primary" id="play" type="button" aria-pressed="false" disabled>Play with narration</button>
+      <div class="contrast" id="contrast" role="group" aria-labelledby="h-contrast" hidden>
+        <h3 id="h-contrast">Hear it another way</h3>
+        <div class="tellings">
+          <button class="telling" type="button" data-demo="cinematic|en" aria-label="Cinephile, in English"><strong>Cinephile</strong><span>in English</span></button>
+          <button class="telling" type="button" data-demo="child|es" aria-label="Child, in Spanish"><strong>Child</strong><span lang="es">en español</span></button>
+          <button class="telling" type="button" data-demo="radio|ja" aria-label="Radio cut, in Japanese"><strong>Radio cut</strong><span lang="ja">日本語で</span></button>
         </div>
       </div>
-      <div class="screen">
-        <video id="vid" controls playsinline preload="metadata"></video>
-        <p class="adline" id="adline" aria-hidden="true"></p>
-      </div>
-      <div class="map-wrap">
-        <div class="map" id="map" aria-hidden="true" title="Click to jump"></div>
-        <div class="map-key">
-          <span class="key"><span class="swatch dialogue"></span>Dialogue</span>
-          <span class="key"><span class="swatch told"></span>Narration</span>
-          <span class="key"><span class="swatch quiet"></span>Too short to narrate</span>
-          <span id="mapLegend"></span>
-        </div>
-      </div>
-      <div class="action">
-        <p class="status" id="status" role="status" aria-live="polite">Load a clip with its subtitles, or use the sample scene.</p>
-        <span class="badge" id="badge" hidden></span>
-      </div>
-      <div class="playback">
-        <button class="btn primary" id="play" type="button" aria-pressed="false" disabled>Play with narration</button>
-        <div class="contrast" id="contrast" role="group" aria-labelledby="h-contrast" hidden>
-          <h3 id="h-contrast">Hear the same scene as</h3>
-          <div class="tellings">
-            <button class="telling" type="button" data-demo="cinematic|en" aria-label="Cinephile, in English"><strong>Cinephile</strong><span>in English</span></button>
-            <button class="telling" type="button" data-demo="child|es" aria-label="Child, in Spanish"><strong>Child</strong><span lang="es">en español</span></button>
-            <button class="telling" type="button" data-demo="radio|ja" aria-label="Radio cut, in Japanese"><strong>Radio cut</strong><span lang="ja">日本語で</span></button>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
 
-  <div class="review">
-    <section id="dialsPanel" aria-labelledby="h-dials">
-      <h2 id="h-dials">The dials</h2>
-      <div class="dials">
-        <span class="dial-label" id="l-persona">Who is listening</span>
-        <div class="pills" role="group" aria-labelledby="l-persona">
+  <div class="flow">
+    <section class="step" id="step-film" aria-labelledby="h-film">
+      <span class="step-num" aria-hidden="true">1</span>
+      <h2 id="h-film">Choose a film</h2>
+      <div class="step-body">
+        <div class="row">
+          <button class="btn" id="sample" type="button">Try the sample scene</button>
+          <button class="btn" id="pick" type="button">Use my own video</button>
+          <input type="file" id="file" accept="video/*,.vtt,.srt,text/vtt" multiple hidden>
+        </div>
+        <p class="note" id="source">Your own video works best with its subtitle file (.vtt or .srt). Select both at once.</p>
+      </div>
+    </section>
+
+    <section class="step done" id="step-listener" aria-labelledby="h-listener">
+      <span class="step-num" aria-hidden="true">2</span>
+      <h2 id="h-listener">Choose who’s listening</h2>
+      <div class="step-body">
+        <div class="pills" role="group" aria-labelledby="h-listener">
           <button class="pill" type="button" data-persona="cinematic" aria-pressed="true">Film lover</button>
           <button class="pill" type="button" data-persona="child" aria-pressed="false">7-year-old</button>
           <button class="pill" type="button" data-persona="radio" aria-pressed="false">Hands-free radio cut</button>
-          <button class="pill" type="button" data-persona="custom" aria-pressed="false">Someone else</button>
         </div>
-        <form class="custom" id="customRow" hidden>
-          <label class="sr-only" for="customText">Describe the listener</label>
-          <input id="customText" maxlength="200" placeholder="A sound designer who wants every texture" autocomplete="off">
-          <button class="btn" type="submit">Use this listener</button>
-        </form>
-        <label class="dial-label" for="lang">Language</label>
-        <select id="lang">
-          <option value="en">English</option>
-          <option value="es" lang="es">Español</option>
-          <option value="fr" lang="fr">Français</option>
-          <option value="de" lang="de">Deutsch</option>
-          <option value="pt" lang="pt">Português</option>
-          <option value="ja" lang="ja">日本語</option>
-          <option value="ar" lang="ar">العربية</option>
-        </select>
-      </div>
-      <button class="btn primary watch" id="watch" type="button" disabled>Watch it with Sightline</button>
-    </section>
-    <section id="beatsPanel" aria-labelledby="h-saw">
-      <h2 id="h-saw">What the model saw</h2>
-      <p class="hint"><span id="beatCount"></span>Green beats are clear in the frame. Amber and red ones are the model’s guesses: check those lines before export.</p>
-      <ul class="list" id="beats"></ul>
-    </section>
-    <section id="narrPanel" aria-labelledby="h-narr">
-      <h2 id="h-narr">The narration, per listener <span class="for" id="narrFor"></span></h2>
-      <ul class="list" id="narr"></ul>
-      <div class="export">
-        <button class="btn" id="export" type="button" disabled>Export AD script</button>
-        <p>A timecoded text script with dialogue cues and every description line, edits included.</p>
+        <label class="field">In
+          <select id="lang">
+            <option value="en">English</option>
+            <option value="es" lang="es">Español</option>
+            <option value="fr" lang="fr">Français</option>
+            <option value="de" lang="de">Deutsch</option>
+            <option value="pt" lang="pt">Português</option>
+            <option value="ja" lang="ja">日本語</option>
+            <option value="ar" lang="ar">العربية</option>
+          </select>
+        </label>
       </div>
     </section>
+
+    <section class="step" id="step-watch" aria-labelledby="h-watch">
+      <span class="step-num" aria-hidden="true">3</span>
+      <h2 id="h-watch">Let Sightline watch</h2>
+      <div class="step-body">
+        <button class="btn primary" id="watch" type="button" disabled>Watch it with Sightline</button>
+        <p class="note">Sightline looks at 8 moments from the film, then writes a description for each pause in the dialogue.</p>
+      </div>
+    </section>
+
+    <div class="results" id="results" hidden>
+      <section id="narrPanel" aria-labelledby="h-narr">
+        <h2 id="h-narr">The narration, per listener <span class="for" id="narrFor"></span></h2>
+        <p class="hint" id="narrHint">Each line fits a pause in the dialogue. Edit anything before you export.</p>
+        <ul class="list" id="narr"></ul>
+        <div class="export">
+          <button class="btn" id="export" type="button" disabled>Export AD script</button>
+          <p>A timecoded text file with the dialogue and every description, including your edits.</p>
+        </div>
+      </section>
+      <section id="beatsPanel" aria-labelledby="h-saw">
+        <h2 id="h-saw">What the model saw</h2>
+        <p class="hint">Green means clear in the frame. Amber and red are guesses: check those before export.</p>
+        <ul class="list" id="beats"></ul>
+      </section>
+    </div>
   </div>
 </main>
 
