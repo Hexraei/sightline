@@ -1,7 +1,7 @@
 // Shared AMD Token Factory client (OpenAI-compatible chat completions).
 const BASE = () => (process.env.AMD_BASE_URL || '').replace(/\/$/, '');
 const KEY = () => process.env.AMD_API_KEY || '';
-const MODEL = () => process.env.AMD_MODEL || 'gemma-3-27b-it';
+const MODEL = () => process.env.AMD_MODEL || 'Gemma-4-31B-IT';
 
 export function backend() {
   const base = BASE();

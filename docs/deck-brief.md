@@ -44,7 +44,7 @@ Team Maverick - AMD Developer Hackathon ACT III
 
 ## Slide 7 - Tech
 **Boring where it should be, clever where it counts.**
-- AMD Developer Cloud Token Factory: gemma-3-27b-it vision + text via OpenAI-compatible API (env: AMD_BASE_URL / AMD_API_KEY / AMD_MODEL). (prototype)
+- AMD Developer Cloud Token Factory: Gemma-4-31B-IT vision + text via OpenAI-compatible API (env: AMD_BASE_URL / AMD_API_KEY / AMD_MODEL). (prototype)
 - Web app: static frontend + Vercel serverless routes (/api/watch, /api/narrate); MIT-licensed open source, public repo. (prototype)
 - Local mode: same code points at Ollama (gemma3:4b) for offline/private use. (prototype)
 

@@ -25,7 +25,7 @@ Parse the VTT into cues; compute gaps (silences) between consecutive cues (start
 
 ## API contract (STABLE - already deployed, do not change)
 
-Both routes are OpenAI-compatible wrappers over AMD Developer Cloud Token Factory (model `gemma-3-27b-it`), env-configured server-side.
+Both routes are OpenAI-compatible wrappers over AMD Developer Cloud Token Factory (model `Gemma-4-31B-IT`), env-configured server-side.
 
 **POST /api/watch**
 Request: `{ frames: string[] (jpeg dataURLs), times: number[] (seconds), transcript: [{t0: number, text: string}] }`
