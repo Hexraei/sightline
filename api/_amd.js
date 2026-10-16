@@ -1,7 +1,7 @@
 // Shared AMD Token Factory client (OpenAI-compatible chat completions).
 const BASE = () => (process.env.AMD_BASE_URL || '').replace(/\/$/, '');
 const KEY = () => process.env.AMD_API_KEY || '';
-const MODEL = () => process.env.AMD_MODEL || 'DeepSeek-V4-Flash-Vision-Exp';
+const MODEL = () => process.env.AMD_MODEL || 'Gemma-4-31B-IT';
 // Free shared endpoints are heavily loaded during the hackathon; fall through
 // this chain on provider-side 5xx / overload. Order: env model first, then
 // proven vision-capable alternates.

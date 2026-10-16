@@ -26,7 +26,7 @@ Team Maverick - AMD Developer Hackathon ACT III
 
 ## Slide 4 - Why now
 **Open models crossed the quality line, and AMD makes them cheap to run.**
-- Open-weight VLMs (Gemma 3 27B) now produce grounded scene descriptions good enough for narration drafts. (prototype - see demo)
+- Open-weight VLMs (Gemma 4 31B) now produce grounded scene descriptions good enough for narration drafts. (prototype - see demo)
 - AMD Developer Cloud Token Factory serves them behind an OpenAI-compatible API - no infra to build. (prototype)
 - The missing piece was never the model - it is timing narration into dialogue gaps. That part is deterministic code. (prototype)
 
@@ -44,7 +44,7 @@ Team Maverick - AMD Developer Hackathon ACT III
 
 ## Slide 7 - Tech
 **Boring where it should be, clever where it counts.**
-- AMD Developer Cloud Token Factory: DeepSeek-V4-Flash-Vision-Exp vision + text via OpenAI-compatible API (env: AMD_BASE_URL / AMD_API_KEY / AMD_MODEL). (prototype)
+- AMD Developer Cloud Token Factory: Gemma 4 31B vision primary, automatic fallback across Token Factory vision models, OpenAI-compatible API (env: AMD_BASE_URL / AMD_API_KEY / AMD_MODEL). (prototype)
 - Web app: static frontend + Vercel serverless routes (/api/watch, /api/narrate); MIT-licensed open source, public repo. (prototype)
 - Local mode: same code points at Ollama (gemma3:4b) for offline/private use. (prototype)
 
