@@ -1,9 +1,9 @@
 #!/bin/bash
 # Gemma vision smoke test for the wake: extract 6 frames from a clip, ask Gemma on AMD to describe them.
-# Usage: AMD_API_KEY=... AMD_BASE_URL=... AMD_MODEL=Gemma-4-31B-IT ./test-gemma-vision.sh clip.mp4
+# Usage: AMD_API_KEY=... AMD_BASE_URL=... AMD_MODEL=DeepSeek-V4-Flash-Vision-Exp ./test-gemma-vision.sh clip.mp4
 set -e
 CLIP="${1:-/home/sandbox/sightline/public/assets/test-clip.mp4}"
-MODEL="${AMD_MODEL:-Gemma-4-31B-IT}"
+MODEL="${AMD_MODEL:-DeepSeek-V4-Flash-Vision-Exp}"
 rm -rf /tmp/sight_frames && mkdir -p /tmp/sight_frames
 if [ "$CLIP" = "photos" ]; then
   for i in 1 2 3 4; do curl -sL --max-time 30 -o /tmp/sight_frames/f0$i.jpg "https://picsum.photos/seed/sight$i/768/512"; done
